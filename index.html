@@ -1,1 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Science Quest! 🔬</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
 
+  <style>
+    /* =====================
+       RESET & BASE STYLES
+    ===================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #f0eaff;
+      --card: #ffffff;
+      --primary: #7c3aed;
+      --primary-light: #a78bfa;
+      --accent: #10b981;
+      --accent-light: #6ee7b7;
+      --secondary: #f59e0b;
+      --secondary-light: #fcd34d;
+      --danger: #ef4444;
+      --danger-light: #fca5a5;
+      --text: #1e1b4b;
+      --text-muted: #6b7280;
+      --border: #ddd6fe;
+      --radius: 1rem;
+      --font-display: 'Fredoka One', cursive;
+      --font-body: 'Nunito', sans-serif;
+
+      /* Answer button colors */
+      --btn-a: linear-gradient(135deg, #7c3aed, #4f46e5);
+      --btn-b: linear-gradient(135deg, #f97316, #ec4899);
+      --btn-c: linear-gradient(135deg, #10b981, #0d9488);
+      --btn-d: linear-gradient(135deg, #38bdf8, #3b82f6);
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* =====================
+       FLOATING BACKGROUND EMOJIS
+    ===================== */
+    #bg-emojis {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bg-emoji {
+      position: absolute;
+      font-size: 2rem;
+      opacity: 0.08;
+      animation: float-emoji 5s ease-in-out infinite;
+    }
+
+    @keyframes float-emoji {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50%       { transform: translateY(-14px) rotate(8deg); }
+    }
+
+    /* =====================
+       SCREENS (pages)
+    ===================== */
+    .screen {
+      display: none;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+      padding: 1.5rem 1rem;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* =====================
+       HOME SCREEN
+    ===================== */
+    #home-screen {
+      text-align: center;
+    }
+
+    .home-inner {
+      max-width: 480px;
+      width: 100%;
+    }
+
+    .home-title-emoji {
+      font-size: 5rem;
+      display: block;
+      margin-bottom: 0.5rem;
+      animation: wiggle 2s ease-in-out infinite;
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25%       { transform: rotate(-6deg); }
+      75%       { transform: rotate(6deg); }
+    }
+
+    .home-title {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      color: var(--primary);
+      line-height: 1.1;
+    }
+
+    .home-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin: 0.75rem auto 1.5rem;
+      max-width: 360px;
+      line-height: 1.5;
+    }
+
+    .feature-chips {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-bottom: 2rem;
+    }
+
+    .chip {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 99px;
+      padding: 0.4rem 1rem;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: 0 2px 6px rgba(124,58,237,0.08);
+    }
+
+    .btn-play {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 1rem 3rem;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(124,58,237,0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .btn-play:hover {
+      transform: scale(1.06);
+      box-shadow: 0 12px 32px rgba(124,58,237,0.4);
+    }
+
+    .btn-play:active {
+      transform: scale(0.97);
+    }
+
+    .home-hint {
+      margin-top: 1.25rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* =====================
+       QUIZ SCREEN
+    ===================== */
+    #quiz-screen {
+      align-items: flex-start;
+    }
+
+    .quiz-inner {
+      max-width: 640px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* Top bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .timer-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .timer-icon {
+      font-size: 1.25rem;
+      transition: transform 0.3s;
+    }
+
+    .timer-icon.pulse {
+      animation: pulse-icon 0.6s ease-in-out infinite;
+    }
+
+    @keyframes pulse-icon {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.25); }
+    }
+
+    .timer-bar-bg {
+      flex: 1;
+      height: 12px;
+      background: #e5e7eb;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .timer-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: var(--secondary);
+      transition: width 0.9s linear, background 0.3s;
+    }
+
+    .timer-bar-fill.low {
+      background: var(--danger);
+    }
+
+    .timer-text {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      min-width: 3rem;
+      text-align: right;
+      color: var(--text);
+      transition: color 0.3s;
+    }
+
+    .timer-text.low {
+      color: var(--danger);
+    }
+
+    .score-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #fef3c7;
+      border: 1.5px solid #fcd34d;
+      border-radius: 99px;
+      padding: 0.35rem 0.9rem;
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      color: #92400e;
+      white-space: nowrap;
+    }
+
+    /* Progress bar */
+    .progress-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--primary);
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 14px;
+      background: #e5e7eb;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.5s ease-out;
+    }
+
+    /* Question card */
+    .question-card {
+      background: var(--card);
+      border-radius: 1.5rem;
+      padding: 1.75rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border: 1.5px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      animation: slide-in 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    @keyframes slide-in {
+      from { opacity: 0; transform: translateX(40px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .question-emoji {
+      font-size: 2.5rem;
+      flex-shrink: 0;
+    }
+
+    .question-text {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      line-height: 1.35;
+      color: var(--text);
+    }
+
+    /* Answer buttons */
+    .answers-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .answer-btn {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      border: 2px solid transparent;
+      border-radius: 1.25rem;
+      font-family: var(--font-body);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      text-align: left;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
+    }
+
+    .answer-btn:not([disabled]):hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    }
+
+    .answer-btn:not([disabled]):active {
+      transform: scale(0.97);
+    }
+
+    .answer-btn[disabled] {
+      cursor: default;
+    }
+
+    .answer-btn .label-badge {
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 0.6rem;
+      background: rgba(255,255,255,0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+
+    .answer-btn .btn-text {
+      flex: 1;
+    }
+
+    .answer-btn .result-icon {
+      font-size: 1.4rem;
+    }
+
+    /* Default gradient colors */
+    .answer-btn[data-idx="0"] { background: var(--btn-a); }
+    .answer-btn[data-idx="1"] { background: var(--btn-b); }
+    .answer-btn[data-idx="2"] { background: var(--btn-c); }
+    .answer-btn[data-idx="3"] { background: var(--btn-d); }
+
+    /* State overrides */
+    .answer-btn.correct {
+      background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+      border-color: #86efac;
+      box-shadow: 0 4px 16px rgba(34,197,94,0.35);
+    }
+
+    .answer-btn.wrong {
+      background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+      border-color: #fca5a5;
+      box-shadow: 0 4px 16px rgba(239,68,68,0.35);
+    }
+
+    .answer-btn.reveal {
+      background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+      border-color: #86efac;
+    }
+
+    .answer-btn.dimmed {
+      background: #d1d5db !important;
+      opacity: 0.5;
+      color: #6b7280;
+    }
+
+    /* Feedback */
+    .feedback-wrap {
+      display: none;
+      flex-direction: column;
+      gap: 0.75rem;
+      animation: pop-in 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    .feedback-wrap.show {
+      display: flex;
+    }
+
+    @keyframes pop-in {
+      from { opacity: 0; transform: scale(0.85); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .feedback-text {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      text-align: center;
+    }
+
+    .feedback-text.correct { color: #16a34a; }
+    .feedback-text.wrong   { color: var(--danger); }
+
+    .fun-fact-box {
+      background: #fef3c7;
+      border: 1.5px solid #fcd34d;
+      border-radius: 1rem;
+      padding: 0.85rem 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+    }
+
+    .fun-fact-box .bulb {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .fun-fact-box p {
+      font-size: 0.9rem;
+      color: #78350f;
+      line-height: 1.5;
+    }
+
+    .fun-fact-box p strong {
+      color: #92400e;
+    }
+
+    /* =====================
+       RESULTS SCREEN
+    ===================== */
+    #results-screen {
+      text-align: center;
+    }
+
+    .results-inner {
+      max-width: 480px;
+      width: 100%;
+    }
+
+    .result-trophy {
+      font-size: 5rem;
+      display: block;
+      margin-bottom: 0.5rem;
+      animation: pop-in 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    .result-title {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      color: var(--text);
+    }
+
+    .score-circle {
+      width: 9rem;
+      height: 9rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 1.25rem auto;
+      box-shadow: 0 8px 24px rgba(124,58,237,0.3);
+      animation: pop-in 0.5s 0.2s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    .score-circle .fraction {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .score-circle .percent {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.75);
+    }
+
+    /* Stars */
+    .stars-row {
+      display: flex;
+      justify-content: center;
+      gap: 0.4rem;
+      margin: 0.75rem 0;
+    }
+
+    .star {
+      font-size: 2rem;
+      opacity: 0.2;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .star.lit {
+      opacity: 1;
+      animation: pop-in 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    .result-msg {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      margin: 0.5rem auto 1.5rem;
+      max-width: 340px;
+      line-height: 1.5;
+    }
+
+    .results-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    @media (min-width: 400px) {
+      .results-btns { flex-direction: row; justify-content: center; }
+    }
+
+    .btn-again {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 0.85rem 2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 6px 18px rgba(124,58,237,0.25);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn-again:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 24px rgba(124,58,237,0.35);
+    }
+
+    .btn-home {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      background: var(--card);
+      color: var(--primary);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.85rem 2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: transform 0.15s;
+    }
+
+    .btn-home:hover {
+      transform: scale(1.05);
+    }
+
+    .results-footer {
+      margin-top: 1.25rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* =====================
+       CONFETTI
+    ===================== */
+    #confetti-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+      overflow: hidden;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      top: -10px;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      animation: fall linear forwards;
+    }
+
+    @keyframes fall {
+      0%   { transform: translateY(0) rotate(0deg);   opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* =====================
+       SOUND TOGGLE
+    ===================== */
+    .sound-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 50;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 99px;
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+      font-size: 1.2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: transform 0.15s;
+    }
+
+    .sound-toggle:hover { transform: scale(1.1); }
+  </style>
+</head>
+<body>
+
+  <!-- Background floating emojis -->
+  <div id="bg-emojis"></div>
+
+  <!-- Confetti container -->
+  <div id="confetti-container"></div>
+
+  <!-- Sound toggle button -->
+  <button class="sound-toggle" id="sound-toggle" title="Toggle sound">🔊</button>
+
+  <!-- ========================
+       SCREEN 1: HOME
+  ========================= -->
+  <div class="screen active" id="home-screen">
+    <div class="home-inner">
+      <span class="home-title-emoji">🔬</span>
+      <h1 class="home-title">Science Quest!</h1>
+      <p class="home-subtitle">Test your brain with awesome science trivia. Can you get a perfect score?</p>
+
+      <div class="feature-chips">
+        <div class="chip">🧠 10 Questions</div>
+        <div class="chip">⚡ Instant Feedback</div>
+        <div class="chip">💡 Fun Facts</div>
+        <div class="chip">🚀 Beat the Clock</div>
+      </div>
+
+      <button class="btn-play" onclick="startQuiz()">
+        🚀 Start Playing!
+      </button>
+
+      <p class="home-hint">⏱ You have 60 seconds to answer all questions!</p>
+    </div>
+  </div>
+
+  <!-- ========================
+       SCREEN 2: QUIZ
+  ========================= -->
+  <div class="screen" id="quiz-screen">
+    <div class="quiz-inner">
+
+      <!-- Top bar: Timer + Score -->
+      <div class="top-bar">
+        <div class="timer-wrap">
+          <span class="timer-icon" id="timer-icon">⏰</span>
+          <div class="timer-bar-bg">
+            <div class="timer-bar-fill" id="timer-bar"></div>
+          </div>
+          <span class="timer-text" id="timer-text">60s</span>
+        </div>
+        <div class="score-badge">🏆 <span id="score-display">0</span></div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span id="progress-label">Question 1 of 10</span>
+          <span id="progress-pct">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progress-bar" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Question card -->
+      <div class="question-card" id="question-card">
+        <span class="question-emoji" id="question-emoji">🪐</span>
+        <h2 class="question-text" id="question-text">Loading...</h2>
+      </div>
+
+      <!-- Answer buttons -->
+      <div class="answers-grid" id="answers-grid"></div>
+
+      <!-- Feedback + Fun Fact -->
+      <div class="feedback-wrap" id="feedback-wrap">
+        <div class="feedback-text" id="feedback-text"></div>
+        <div class="fun-fact-box">
+          <span class="bulb">💡</span>
+          <p><strong>Fun Fact:</strong> <span id="fun-fact-text"></span></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================
+       SCREEN 3: RESULTS
+  ========================= -->
+  <div class="screen" id="results-screen">
+    <div class="results-inner">
+      <span class="result-trophy" id="result-trophy">🏆</span>
+      <h1 class="result-title">Quiz Complete!</h1>
+
+      <div class="score-circle">
+        <span class="fraction" id="result-fraction">0/10</span>
+        <span class="percent" id="result-pct">0%</span>
+      </div>
+
+      <div class="stars-row" id="stars-row">
+        <span class="star">⭐</span>
+        <span class="star">⭐</span>
+        <span class="star">⭐</span>
+        <span class="star">⭐</span>
+        <span class="star">⭐</span>
+      </div>
+
+      <p class="result-msg" id="result-msg"></p>
+
+      <div class="results-btns">
+        <button class="btn-again" onclick="startQuiz()">🔄 Play Again</button>
+        <button class="btn-home"  onclick="showScreen('home-screen')">🏠 Home</button>
+      </div>
+
+      <p class="results-footer">✨ New questions every time you play!</p>
+    </div>
+  </div>
+
+
+  <script>
+    /* =====================
+       QUIZ DATA — 12 questions, 10 picked randomly each game
+    ===================== */
+    const ALL_QUESTIONS = [
+      {
+        question: "Which planet is known as the Red Planet?",
+        options: ["Venus", "Mars", "Jupiter", "Saturn"],
+        correct: 1,
+        funFact: "Mars looks red because its soil contains iron oxide — basically rust!",
+        emoji: "🪐",
+      },
+      {
+        question: "What is the hardest natural substance on Earth?",
+        options: ["Gold", "Iron", "Diamond", "Quartz"],
+        correct: 2,
+        funFact: "Diamonds are made of carbon atoms squeezed under extreme heat and pressure deep underground!",
+        emoji: "💎",
+      },
+      {
+        question: "How many bones does an adult human body have?",
+        options: ["106", "206", "306", "156"],
+        correct: 1,
+        funFact: "Babies are born with about 270 bones, but many fuse together as they grow!",
+        emoji: "🦴",
+      },
+      {
+        question: "Which animal can hold its breath the longest?",
+        options: ["Dolphin", "Blue Whale", "Cuvier's Beaked Whale", "Sea Turtle"],
+        correct: 2,
+        funFact: "Cuvier's Beaked Whale can hold its breath for nearly 4 hours underwater!",
+        emoji: "🐋",
+      },
+      {
+        question: "What gas do plants absorb from the air?",
+        options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"],
+        correct: 2,
+        funFact: "Plants use carbon dioxide + sunlight to make their own food — it's called photosynthesis!",
+        emoji: "🌿",
+      },
+      {
+        question: "What is the largest organ in the human body?",
+        options: ["Heart", "Brain", "Liver", "Skin"],
+        correct: 3,
+        funFact: "Your skin weighs about 8 pounds and would cover about 22 square feet if laid flat!",
+        emoji: "🧬",
+      },
+      {
+        question: "Which planet is the largest in our Solar System?",
+        options: ["Saturn", "Neptune", "Jupiter", "Uranus"],
+        correct: 2,
+        funFact: "Jupiter is so big that more than 1,300 Earths could fit inside it!",
+        emoji: "🌍",
+      },
+      {
+        question: "What is water made of?",
+        options: ["Hydrogen & Oxygen", "Carbon & Oxygen", "Nitrogen & Hydrogen", "Helium & Oxygen"],
+        correct: 0,
+        funFact: "Each water molecule has 2 hydrogen atoms and 1 oxygen atom — that's why it's called H₂O!",
+        emoji: "💧",
+      },
+      {
+        question: "Which animal is known for changing its color?",
+        options: ["Gecko", "Iguana", "Chameleon", "Frog"],
+        correct: 2,
+        funFact: "Chameleons change color mostly to communicate mood, not just for camouflage!",
+        emoji: "🦎",
+      },
+      {
+        question: "What force keeps us on the ground?",
+        options: ["Magnetism", "Friction", "Gravity", "Electricity"],
+        correct: 2,
+        funFact: "Without gravity, you'd float away into space — and so would everything else!",
+        emoji: "🍎",
+      },
+      {
+        question: "How long does it take light from the Sun to reach Earth?",
+        options: ["8 seconds", "8 minutes", "8 hours", "8 days"],
+        correct: 1,
+        funFact: "Sunlight travels at 186,000 miles per second and still takes about 8 minutes to reach us!",
+        emoji: "☀️",
+      },
+      {
+        question: "What is the fastest land animal?",
+        options: ["Lion", "Cheetah", "Horse", "Gazelle"],
+        correct: 1,
+        funFact: "Cheetahs can sprint up to 70 mph — but only for short bursts of about 60 seconds!",
+        emoji: "🐆",
+      },
+    ];
+
+    const LABELS = ["A", "B", "C", "D"];
+    const TOTAL_TIME = 60;
+
+    /* =====================
+       GAME STATE
+    ===================== */
+    let questions     = [];   // shuffled subset of 10
+    let currentIndex  = 0;
+    let score         = 0;
+    let timeLeft      = TOTAL_TIME;
+    let timerInterval = null;
+    let answered      = false;
+    let soundEnabled  = true;
+
+    /* =====================
+       AUDIO (Web Audio API — no files needed)
+    ===================== */
+    let audioCtx = null;
+
+    function getAudioCtx() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      return audioCtx;
+    }
+
+    // Play a simple beep tone
+    function playTone(freq, duration, type = "sine", gain = 0.4) {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioCtx();
+        const osc = ctx.createOscillator();
+        const vol = ctx.createGain();
+        osc.connect(vol);
+        vol.connect(ctx.destination);
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        vol.gain.setValueAtTime(gain, ctx.currentTime);
+        vol.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + duration);
+      } catch(e) { /* silently ignore audio errors */ }
+    }
+
+    function playCorrectSound() {
+      // Happy ascending notes
+      playTone(523, 0.15);  // C5
+      setTimeout(() => playTone(659, 0.15), 150);  // E5
+      setTimeout(() => playTone(784, 0.25), 300);  // G5
+    }
+
+    function playWrongSound() {
+      // Low buzzer
+      playTone(220, 0.2, "sawtooth", 0.3);
+      setTimeout(() => playTone(185, 0.25, "sawtooth", 0.3), 200);
+    }
+
+    function playTickSound() {
+      playTone(880, 0.05, "square", 0.1);
+    }
+
+    function playFinishSound() {
+      // Victory fanfare
+      [523, 659, 784, 1047].forEach((f, i) =>
+        setTimeout(() => playTone(f, 0.2), i * 120)
+      );
+    }
+
+    /* =====================
+       SOUND TOGGLE
+    ===================== */
+    const soundBtn = document.getElementById("sound-toggle");
+    soundBtn.addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+      soundBtn.textContent = soundEnabled ? "🔊" : "🔇";
+    });
+
+    /* =====================
+       BACKGROUND EMOJIS SETUP
+    ===================== */
+    (function setupBgEmojis() {
+      const emojis = ["🔬", "🧪", "🌍", "🚀", "⭐", "🧬", "🔭", "💡", "🌙", "🪐"];
+      const container = document.getElementById("bg-emojis");
+      emojis.forEach((em, i) => {
+        const el = document.createElement("div");
+        el.className = "bg-emoji";
+        el.textContent = em;
+        el.style.left  = `${(i * 10) + 2}%`;
+        el.style.top   = `${(i * 8) + 5}%`;
+        el.style.animationDuration = `${4 + i * 0.5}s`;
+        el.style.animationDelay   = `${i * 0.3}s`;
+        container.appendChild(el);
+      });
+    })();
+
+    /* =====================
+       SCREEN NAVIGATION
+    ===================== */
+    function showScreen(id) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
+
+    /* =====================
+       SHUFFLE HELPER
+    ===================== */
+    function shuffle(arr) {
+      return [...arr].sort(() => Math.random() - 0.5);
+    }
+
+    /* =====================
+       START QUIZ
+    ===================== */
+    function startQuiz() {
+      // Reset state
+      questions    = shuffle(ALL_QUESTIONS).slice(0, 10);
+      currentIndex = 0;
+      score        = 0;
+      timeLeft     = TOTAL_TIME;
+      answered     = false;
+
+      // Update UI
+      document.getElementById("score-display").textContent = 0;
+      showScreen("quiz-screen");
+
+      // Start timer
+      clearInterval(timerInterval);
+      updateTimerUI();
+      timerInterval = setInterval(timerTick, 1000);
+
+      // Load first question
+      loadQuestion();
+    }
+
+    /* =====================
+       TIMER
+    ===================== */
+    function timerTick() {
+      timeLeft--;
+      updateTimerUI();
+      if (timeLeft % 5 === 0 && timeLeft > 0) playTickSound();
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        showResults();
+      }
+    }
+
+    function updateTimerUI() {
+      const pct = (timeLeft / TOTAL_TIME) * 100;
+      const bar  = document.getElementById("timer-bar");
+      const text = document.getElementById("timer-text");
+      const icon = document.getElementById("timer-icon");
+
+      bar.style.width = pct + "%";
+      text.textContent = timeLeft + "s";
+
+      const isLow = timeLeft <= 10;
+      bar.classList.toggle("low", isLow);
+      text.classList.toggle("low", isLow);
+      icon.classList.toggle("pulse", isLow);
+    }
+
+    /* =====================
+       LOAD QUESTION
+    ===================== */
+    function loadQuestion() {
+      answered = false;
+      const q = questions[currentIndex];
+
+      // Animate question card back in
+      const card = document.getElementById("question-card");
+      card.style.animation = "none";
+      card.offsetHeight; // reflow
+      card.style.animation = "";
+
+      // Set question content
+      document.getElementById("question-emoji").textContent = q.emoji;
+      document.getElementById("question-text").textContent  = q.question;
+
+      // Progress
+      const pct = Math.round((currentIndex / questions.length) * 100);
+      document.getElementById("progress-label").textContent =
+        `Question ${currentIndex + 1} of ${questions.length}`;
+      document.getElementById("progress-pct").textContent = pct + "%";
+      document.getElementById("progress-bar").style.width  = pct + "%";
+
+      // Score
+      document.getElementById("score-display").textContent = score;
+
+      // Build answer buttons
+      const grid = document.getElementById("answers-grid");
+      grid.innerHTML = "";
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement("button");
+        btn.className = "answer-btn";
+        btn.setAttribute("data-idx", i);
+        btn.innerHTML = `
+          <span class="label-badge">${LABELS[i]}</span>
+          <span class="btn-text">${opt}</span>
+          <span class="result-icon"></span>
+        `;
+        btn.addEventListener("click", () => handleAnswer(i));
+        // Staggered animation
+        btn.style.animation = "none";
+        btn.style.opacity = "0";
+        btn.style.transform = "translateY(16px)";
+        setTimeout(() => {
+          btn.style.transition = "opacity 0.3s, transform 0.3s";
+          btn.style.opacity = "1";
+          btn.style.transform = "translateY(0)";
+        }, i * 90);
+        grid.appendChild(btn);
+      });
+
+      // Hide feedback
+      const fw = document.getElementById("feedback-wrap");
+      fw.classList.remove("show");
+    }
+
+    /* =====================
+       HANDLE ANSWER
+    ===================== */
+    function handleAnswer(selectedIdx) {
+      if (answered) return;
+      answered = true;
+
+      const q = questions[currentIndex];
+      const isCorrect = selectedIdx === q.correct;
+
+      if (isCorrect) {
+        score++;
+        playCorrectSound();
+      } else {
+        playWrongSound();
+      }
+
+      // Update score display
+      document.getElementById("score-display").textContent = score;
+
+      // Style buttons
+      const buttons = document.querySelectorAll(".answer-btn");
+      buttons.forEach((btn, i) => {
+        btn.disabled = true;
+        const icon = btn.querySelector(".result-icon");
+
+        if (i === q.correct) {
+          if (selectedIdx === i) {
+            btn.classList.add("correct");
+            icon.textContent = "✅";
+          } else {
+            btn.classList.add("reveal");
+            icon.textContent = "👈";
+          }
+        } else if (i === selectedIdx) {
+          btn.classList.add("wrong");
+          icon.textContent = "❌";
+        } else {
+          btn.classList.add("dimmed");
+        }
+      });
+
+      // Show feedback
+      const fw   = document.getElementById("feedback-wrap");
+      const ft   = document.getElementById("feedback-text");
+      const fact = document.getElementById("fun-fact-text");
+
+      ft.textContent = isCorrect ? "🎉 Correct!" : "😅 Wrong!";
+      ft.className   = "feedback-text " + (isCorrect ? "correct" : "wrong");
+      fact.textContent = q.funFact;
+      fw.classList.add("show");
+
+      // Auto-advance after 2 seconds
+      setTimeout(() => {
+        currentIndex++;
+        if (currentIndex >= questions.length) {
+          showResults();
+        } else {
+          loadQuestion();
+        }
+      }, 2000);
+    }
+
+    /* =====================
+       SHOW RESULTS
+    ===================== */
+    function showResults() {
+      clearInterval(timerInterval);
+
+      const total  = questions.length;
+      const pct    = Math.round((score / total) * 100);
+
+      // Determine message, emoji, stars
+      let msg, trophy, stars;
+      if (pct === 100) {
+        msg = "PERFECT SCORE! You're a science genius!"; trophy = "🏆"; stars = 5;
+      } else if (pct >= 80) {
+        msg = "Amazing! You really know your science!";  trophy = "🌟"; stars = 4;
+      } else if (pct >= 60) {
+        msg = "Great job! You're on your way to being a scientist!"; trophy = "🔬"; stars = 3;
+      } else if (pct >= 40) {
+        msg = "Not bad! Keep exploring and learning!";   trophy = "📚"; stars = 2;
+      } else {
+        msg = "Keep trying! Science is all about learning!"; trophy = "💪"; stars = 1;
+      }
+
+      // Update DOM
+      document.getElementById("result-trophy").textContent   = trophy;
+      document.getElementById("result-fraction").textContent = `${score}/${total}`;
+      document.getElementById("result-pct").textContent      = pct + "%";
+      document.getElementById("result-msg").textContent      = msg;
+
+      // Animate stars
+      const starEls = document.querySelectorAll("#stars-row .star");
+      starEls.forEach((s, i) => {
+        s.classList.remove("lit");
+        if (i < stars) {
+          setTimeout(() => {
+            s.classList.add("lit");
+            s.style.animationDelay = (i * 0.1) + "s";
+          }, 600 + i * 120);
+        }
+      });
+
+      showScreen("results-screen");
+
+      // Confetti for good scores
+      if (pct >= 60) {
+        setTimeout(launchConfetti, 300);
+        playFinishSound();
+      }
+    }
+
+    /* =====================
+       CONFETTI
+    ===================== */
+    function launchConfetti() {
+      const colors = [
+        "#7c3aed","#f97316","#10b981","#f59e0b",
+        "#ec4899","#38bdf8","#ef4444","#a78bfa",
+      ];
+      const container = document.getElementById("confetti-container");
+      container.innerHTML = "";
+
+      for (let i = 0; i < 60; i++) {
+        const piece = document.createElement("div");
+        piece.className = "confetti-piece";
+        piece.style.left     = Math.random() * 100 + "%";
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.width    = (6 + Math.random() * 8) + "px";
+        piece.style.height   = (6 + Math.random() * 8) + "px";
+        piece.style.animationDuration = (2 + Math.random() * 2) + "s";
+        piece.style.animationDelay   = (Math.random() * 0.6) + "s";
+        container.appendChild(piece);
+      }
+
+      // Clean up after animation
+      setTimeout(() => { container.innerHTML = ""; }, 5000);
+    }
+  </script>
+
+</body>
+</html>
